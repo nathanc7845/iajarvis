@@ -26,7 +26,7 @@ import eel
 # CONFIGURAÇÕES (O PODER FINAL)
 # ==========================================
 # A chave que vai destrancar o mundo após o faturamento estar ativo
-GEMINI_API_KEY = "AIzaSyBeEcKalFlNml2us721btkD20sY5T9PC7c" 
+GEMINI_API_KEY = "" 
 
 # Os links EXATOS (Certifique-se de "Ativar/Enable" eles no site do Sequematic!)
 URL_LUZ_LIGAR = "https://sequematic.com/trigger-custom-webhook/CD70A2C386/164100"
