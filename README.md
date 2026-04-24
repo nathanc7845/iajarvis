@@ -1,1 +1,1 @@
-python -m eel jarvis.py web --onefile --noconsole --name "JARVIS" --hidden-import pyaudio
+pyinstaller jarvis.py --hidden-import bottle_websocket --add-data "C:\caminho\do\seu\python\site-packages\eel\eel.js;eel" --add-data "web;web" --onefile --noconsole --name "JARVIS" --hidden-import pyaudio
