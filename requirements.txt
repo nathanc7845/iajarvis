@@ -1,0 +1,13 @@
+SpeechRecognition
+edge-tts
+pyautogui
+requests
+wikipedia
+feedparser
+keyboard
+comtypes
+pycaw
+eel
+pyinstaller
+pygame
+pyaudio

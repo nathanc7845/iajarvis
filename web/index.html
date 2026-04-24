@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS Interface</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Importing Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="/eel.js"></script>
+    <script>
+        eel.expose(update_status);
+        function update_status(status_text) {
+            const statusElement = document.querySelector('.hud-stats-right div:first-child');
+            if (statusElement) {
+                statusElement.innerHTML = `<i class="fa-solid fa-sparkles"></i> Sys status: ${status_text}`;
+            }
+        }
+        
+        eel.expose(update_transcription);
+        function update_transcription(texto) {
+            const input = document.getElementById('comandoInput');
+            if (input) {
+                input.value = texto;
+            }
+        }
+
+        eel.expose(update_jarvis_speech);
+        function update_jarvis_speech(texto) {
+            const speechElement = document.getElementById('jarvisSpeech');
+            if (speechElement) {
+                speechElement.innerText = texto;
+            }
+        }
+
+        function enviarComando(texto) {
+            eel.comando_manual(texto);
+            const input = document.getElementById('comandoInput');
+            if(input) input.value = '';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('comandoInput');
+                if (input.value.trim() !== '') {
+                    enviarComando(input.value);
+                }
+            }
+        }
+
+        // Funções para Modais
+        function abrirModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function fecharModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function selecionarContato(contato) {
+            const inputMsg = document.getElementById('zapMsg');
+            if(inputMsg.value.trim() === '') {
+                alert("Digite uma mensagem primeiro!");
+                inputMsg.focus();
+                return;
+            }
+            enviarComando(`mensagem para ${contato} dizendo ${inputMsg.value}`);
+            inputMsg.value = '';
+            fecharModal('modalZap');
+        }
+
+        function tocarMusica() {
+            const inputMusica = document.getElementById('musicName');
+            if(inputMusica.value.trim() !== '') {
+                enviarComando(`tocar ${inputMusica.value}`);
+                inputMusica.value = '';
+                fecharModal('modalMusic');
+            }
+        }
+    </script>
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 17, 30, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: rgba(16, 26, 43, 0.9);
+            border: 1px solid var(--acc-cyan);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(56, 189, 248, 0.1);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: transparent; border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem; cursor: pointer;
+        }
+        .modal-close:hover { color: var(--acc-cyan); }
+        .modal-title {
+            color: var(--acc-cyan); font-weight: 500; font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .modal-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: white; padding: 10px 15px;
+            border-radius: 8px; margin-bottom: 1.5rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+        .modal-input:focus { border-color: var(--acc-cyan); }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: white; padding: 10px; border-radius: 8px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .contact-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--acc-cyan);
+        }
+        .modal-btn {
+            width: 100%;
+            background: var(--acc-blue);
+            border: none; color: white;
+            padding: 12px; border-radius: 8px;
+            cursor: pointer; font-weight: bold;
+        }
+        .modal-btn:hover { background: var(--acc-cyan); }
+    </style>
+</head>
+<body>
+    <video autoplay loop muted playsinline id="bg-video">
+        <source src="fundovideo.mp4" type="video/mp4">
+    </video>
+
+    <!-- Abstract background elements -->
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
+
+    <!-- UI Overlay borders (tech aesthetic) -->
+    <div class="tech-border top-left"></div>
+    <div class="tech-border top-right"></div>
+    <div class="tech-border bottom-left"></div>
+    <div class="tech-border bottom-right"></div>
+    
+    <!-- Top HUD lines -->
+    <div class="hud-top-line"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <div class="logo">JARVIS</div>
+        </div>
+        <div class="header-right">
+        </div>
+    </header>
+    <div class="hud-stats-right">
+        <div><i class="fa-solid fa-sparkles"></i> Sys status: ONLINE</div>
+        <div>Data stream: ACTIVE</div>
+        <div>Sync rate: 99.9%</div>
+    </div>
+
+    <main class="main-content">
+        <!-- Greetings -->
+        <div class="greeting-container">
+            <h2 class="greeting-sub">Olá</h2>
+            <h1 class="greeting-main" id="jarvisSpeech">O que vamos fazer hoje?</h1>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="input-wrapper">
+            <div class="input-glow-bg"></div>
+            <div class="input-container">
+                <div class="input-field" style="width: 100%;">
+                    <input type="text" id="comandoInput" placeholder="Peça ao JARVIS..." onkeypress="handleKeyPress(event)" style="background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; font-size: 1rem;">
+                </div>
+                <div class="input-actions">
+                    <div class="right-actions">
+                        <button class="tool-btn circle mic"><i class="fa-solid fa-microphone"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Cards Carousel -->
+        <div class="cards-container" style="max-height: 40vh; overflow-y: auto; padding: 10px; max-width: 800px;">
+            <div class="action-card" onclick="enviarComando('acender luz')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-lightbulb text-green"></i></div><div class="network-bg"></div></div>
+                <div class="card-title">Acender Luz</div>
+            </div>
+            
+            <div class="action-card" onclick="enviarComando('apagar luz')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-regular fa-lightbulb"></i></div><div class="camera-bg"></div></div>
+                <div class="card-title">Apagar Luz</div>
+            </div>
+
+            <div class="action-card" onclick="abrirModal('modalZap')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-brands fa-whatsapp text-green"></i></div><div class="music-bg"></div></div>
+                <div class="card-title">Enviar Mensagem</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('abrir youtube')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-brands fa-youtube text-red"></i></div><div class="video-bg"></div></div>
+                <div class="card-title">Abrir YouTube</div>
+            </div>
+
+            <div class="action-card" onclick="abrirModal('modalMusic')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-music text-green"></i></div><div class="star-bg"></div></div>
+                <div class="card-title">Tocar Música</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('pausar música')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-pause"></i></div><div class="code-bg"></div></div>
+                <div class="card-title">Pausar/Play</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('próxima música')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-forward-step"></i></div><div class="network-bg"></div></div>
+                <div class="card-title">Próxima Música</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('voltar música')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-backward-step"></i></div><div class="camera-bg"></div></div>
+                <div class="card-title">Voltar Música</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('abrir navegador')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-brands fa-chrome"></i></div><div class="music-bg"></div></div>
+                <div class="card-title">Abrir Navegador</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('abrir explorer')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-folder-open"></i></div><div class="code-bg"></div></div>
+                <div class="card-title">Abrir Arquivos</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('desligar computador')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-power-off text-red"></i></div><div class="video-bg"></div></div>
+                <div class="card-title">Desligar PC</div>
+            </div>
+
+            <div class="action-card" onclick="enviarComando('encerrar sistema')">
+                <div class="card-icon-container"><div class="card-icon"><i class="fa-solid fa-robot text-red"></i></div><div class="star-bg"></div></div>
+                <div class="card-title">Encerrar JARVIS</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal WhatsApp -->
+    <div class="modal-overlay" id="modalZap">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal('modalZap')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-brands fa-whatsapp text-green"></i> Enviar Mensagem</div>
+            <input type="text" id="zapMsg" class="modal-input" placeholder="O que você quer dizer?">
+            <div class="contact-grid">
+                <button class="contact-btn" onclick="selecionarContato('mamãe')">Mamãe</button>
+                <button class="contact-btn" onclick="selecionarContato('nathan')">Nathan</button>
+                <button class="contact-btn" onclick="selecionarContato('nina')">Nina</button>
+                <button class="contact-btn" onclick="selecionarContato('giovanna')">Giovanna</button>
+                <button class="contact-btn" onclick="selecionarContato('ronald')">Ronald</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tocar Música -->
+    <div class="modal-overlay" id="modalMusic">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal('modalMusic')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-brands fa-youtube text-red"></i> Tocar Música</div>
+            <input type="text" id="musicName" class="modal-input" placeholder="Nome da música..." onkeypress="if(event.key==='Enter') tocarMusica()">
+            <button class="modal-btn" onclick="tocarMusica()">Tocar</button>
+        </div>
+    </div>
+
+</body>
+</html>
